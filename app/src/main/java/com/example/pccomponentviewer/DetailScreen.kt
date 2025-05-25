@@ -1,6 +1,7 @@
 package com.example.pccomponentviewer
 
 import android.R
+import android.R.attr.maxWidth
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -23,7 +24,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.pccomponentviewer.data.GraphicsCard
 import com.example.pccomponentviewer.data.PCComponent
@@ -140,6 +143,7 @@ fun SpecificationItem(label: String, value: String) {
     }
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun VideoPlayerItem(videoUri: String) {
     val context = LocalContext.current
@@ -158,11 +162,15 @@ fun VideoPlayerItem(videoUri: String) {
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .aspectRatio(16f/9f),
         factory = { context ->
             PlayerView(context).apply {
                 this.player = player
             }
         }
     )
+}
+
+private fun Int.toDp() {
+    TODO("Not yet implemented")
 }

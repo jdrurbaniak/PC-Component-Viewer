@@ -14,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -210,7 +211,7 @@ fun PCComponentInformation(
     pcComponentName: String,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    FlowColumn(modifier = modifier, ) {
         Text(
             text = pcComponentName,
             style = MaterialTheme.typography.titleMedium,
@@ -218,7 +219,7 @@ fun PCComponentInformation(
         )
         Text(
             text = "Test",
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.titleSmall
         )
     }
 }
