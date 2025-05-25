@@ -10,6 +10,7 @@ sealed class PCComponent {
     @get:DrawableRes
     abstract val imageResourceId: Int
     abstract val componentType: ComponentType
+    abstract val videoUrl: String?
 }
 
 enum class ComponentType {
@@ -24,11 +25,12 @@ data class RAM(
     override val id: Int,
     override val name: String,
     @DrawableRes override val imageResourceId: Int,
-    val size: Int, // w GB
+    val size: Int,
     val manufacturer: String,
     val type: RAMType,
-    val frequency: Int, // w MHz
-    val timing: String, // np. "CL16"
+    val frequency: Int,
+    val timing: String,
+    override val videoUrl: String? = null,
     override val componentType: ComponentType = ComponentType.RAM
 ) : PCComponent()
 
@@ -41,11 +43,12 @@ data class Storage(
     override val name: String,
     @DrawableRes override val imageResourceId: Int,
     val type: StorageType,
-    val capacity: Int, // w GB
+    val capacity: Int,
     val manufacturer: String,
-    val readSpeed: Int?, // w MB/s, null dla HDD
-    val writeSpeed: Int?, // w MB/s, null dla HDD
-    val rpm: Int?, // tylko dla HDD
+    val readSpeed: Int?,
+    val writeSpeed: Int?,
+    val rpm: Int?,
+    override val videoUrl: String? = null,
     override val componentType: ComponentType = ComponentType.STORAGE
 ) : PCComponent()
 
@@ -58,11 +61,11 @@ data class GraphicsCard(
     override val name: String,
     @DrawableRes override val imageResourceId: Int,
     val manufacturer: String,
-    val vramSize: Int, // w GB
-    val clockSpeed: Int, // w MHz
+    val vramSize: Int,
+    val clockSpeed: Int,
+    override val videoUrl: String? = null,
     override val componentType: ComponentType = ComponentType.GRAPHICS_CARD
 ) : PCComponent()
-
 
 object PCComponents {
     val components = listOf(
@@ -74,7 +77,8 @@ object PCComponents {
             manufacturer = "Corsair",
             type = RAMType.DDR4,
             frequency = 3600,
-            timing = "CL18"
+            timing = "CL18",
+            videoUrl = "testvideo"
         ),
         RAM(
             id = 2,

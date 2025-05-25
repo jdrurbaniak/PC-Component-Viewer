@@ -1,25 +1,44 @@
 package com.example.pccomponentviewer
 
-import androidx.compose.foundation.horizontalScroll
+import android.R
+import android.content.Context
+import android.net.Uri
+import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.util.Log
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
+import com.example.pccomponentviewer.data.GraphicsCard
 import com.example.pccomponentviewer.data.PCComponent
 import com.example.pccomponentviewer.data.RAM
 import com.example.pccomponentviewer.data.Storage
 import com.example.pccomponentviewer.data.StorageType
-import com.example.pccomponentviewer.data.GraphicsCard
+import com.google.common.reflect.Reflection.getPackageName
 
+
+class DetailScreen : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val player = ExoPlayer.Builder(this).build()
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +90,7 @@ fun DetailScreen(
                     SpecificationItem("Taktowanie", "${pcComponent.frequency} MHz")
                     SpecificationItem("Opóźnienia", pcComponent.timing)
                 }
+
                 is Storage -> {
                     SpecificationItem("Producent", pcComponent.manufacturer)
                     SpecificationItem("Typ", pcComponent.type.name.replace("_", " "))
@@ -79,17 +99,22 @@ fun DetailScreen(
                         StorageType.HDD -> {
                             SpecificationItem("Obroty", "${pcComponent.rpm} RPM")
                         }
+
                         else -> {
                             SpecificationItem("Prędkość odczytu", "${pcComponent.readSpeed} MB/s")
                             SpecificationItem("Prędkość zapisu", "${pcComponent.writeSpeed} MB/s")
                         }
                     }
                 }
+
                 is GraphicsCard -> {
                     SpecificationItem("Producent", pcComponent.manufacturer)
                     SpecificationItem("Pamięć VRAM", "${pcComponent.vramSize} GB")
                     SpecificationItem("Taktowanie", "${pcComponent.clockSpeed} MHz")
                 }
+            }
+            if(pcComponent.videoUrl != null) {
+                VideoPlayerItem(videoUri = pcComponent.videoUrl!!)
             }
         }
     }
@@ -113,4 +138,31 @@ fun SpecificationItem(label: String, value: String) {
             style = MaterialTheme.typography.bodyLarge
         )
     }
+}
+
+@Composable
+fun VideoPlayerItem(videoUri: String) {
+    val context = LocalContext.current
+    val player = remember {
+        ExoPlayer.Builder(context).build().apply {
+            setMediaItem(MediaItem.fromUri("android.resource://${context.packageName}/raw/${videoUri}"))
+            prepare()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            player.release()
+        }
+    }
+    AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        factory = { context ->
+            PlayerView(context).apply {
+                this.player = player
+            }
+        }
+    )
 }
